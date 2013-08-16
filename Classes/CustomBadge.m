@@ -34,6 +34,7 @@
 @synthesize badgeTextColor;
 @synthesize badgeInsetColor;
 @synthesize badgeFrameColor;
+@synthesize badgeShadowColor;
 @synthesize badgeFrame;
 @synthesize badgeCornerRoundness;
 @synthesize badgeScaleFactor;
@@ -51,6 +52,7 @@
 		self.badgeFrame = YES;
 		self.badgeFrameColor = [UIColor whiteColor];
 		self.badgeInsetColor = [UIColor redColor];
+		self.badgeShadowColor = [UIColor blackColor];
 		self.badgeCornerRoundness = 0.4;
 		self.badgeScaleFactor = scale;
 		self.badgeShining = shining;
@@ -103,14 +105,22 @@
 // Creates a Badge with a given Text 
 + (CustomBadge*) customBadgeWithString:(NSString *)badgeString
 {
+#if __has_feature(objc_arc)
+	return [[self alloc] initWithString:badgeString withScale:1.0 withShining:YES];
+#else
 	return [[[self alloc] initWithString:badgeString withScale:1.0 withShining:YES] autorelease];
+#endif
 }
 
 
 // Creates a Badge with a given Text, Text Color, Inset Color, Frame (YES/NO) and Frame Color 
 + (CustomBadge*) customBadgeWithString:(NSString *)badgeString withStringColor:(UIColor*)stringColor withInsetColor:(UIColor*)insetColor withBadgeFrame:(BOOL)badgeFrameYesNo withBadgeFrameColor:(UIColor*)frameColor withScale:(CGFloat)scale withShining:(BOOL)shining
 {
+#if __has_feature(objc_arc)
+	return [[self alloc] initWithString:badgeString withStringColor:stringColor withInsetColor:insetColor withBadgeFrame:badgeFrameYesNo withBadgeFrameColor:frameColor withScale:scale withShining:shining];
+#else
 	return [[[self alloc] initWithString:badgeString withStringColor:stringColor withInsetColor:insetColor withBadgeFrame:badgeFrameYesNo withBadgeFrameColor:frameColor withScale:scale withShining:shining] autorelease];
+#endif
 }
 
 
@@ -135,7 +145,7 @@
 	CGContextAddArc(context, maxX-radius, maxY-radius, radius, 0, M_PI/2, 0);
 	CGContextAddArc(context, minX+radius, maxY-radius, radius, M_PI/2, M_PI, 0);
 	CGContextAddArc(context, minX+radius, minY+radius, radius, M_PI, M_PI+M_PI/2, 0);
-	CGContextSetShadowWithColor(context, CGSizeMake(1.0,1.0), 3, [[UIColor blackColor] CGColor]);
+	CGContextSetShadowWithColor(context, CGSizeMake(1.0,1.0), 3, [self.badgeShadowColor CGColor]);
     CGContextFillPath(context);
 
 	CGContextRestoreGState(context);
@@ -240,11 +250,13 @@
 
 - (void)dealloc {
 	
+#if !__has_feature(objc_arc)
 	[badgeText release];
 	[badgeTextColor release];
 	[badgeInsetColor release];
 	[badgeFrameColor release];	
     [super dealloc];
+#endif
 }
 
 
